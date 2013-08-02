@@ -1,0 +1,50 @@
+options
+{
+	module_path="../../cocos2dx/proj.marmalade"
+}
+
+subprojects
+{
+	cocos2dx
+}
+includepaths
+{
+	.
+	"../"
+}
+
+files
+{
+	(.)
+	["docs"]
+	cocos2dx-ext_public.defines.txt
+
+	("../")
+    "*.h"
+	
+	["CCBReader"]
+	("../CCBReader")
+    "*.h"
+    "*.cpp"
+
+	["GUI/CCControlExtension"]
+	("../GUI/CCControlExtension")
+    "*.h"
+    "*.cpp"
+	
+	["GUI/CCEditBox"]
+	("../GUI/CCEditBox")
+#    "CCEditBox.h"
+#    "CCEditBox.cpp"
+
+	["GUI/CCScrollView"]
+	("../GUI/CCScrollView")
+    "*.h"
+    "*.cpp"
+
+	["PhysicsNodes"]
+	("../physics_nodes")
+    "*.h"
+    "*.cpp"
+}
+

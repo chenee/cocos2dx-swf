@@ -1,0 +1,136 @@
+# Makefile for tu-testbed/base library
+
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+VPATH = $(srcdir)
+
+include ../config.mk
+
+
+INCLUDES:= \
+	-I..\
+	$(ENGINE_INCLUDE) \
+	$(LIBPNG_INCLUDE) \
+	$(ZLIB_INCLUDE) \
+	$(JPEGLIB_INCLUDE) \
+	-I$(top_srcdir)
+
+CPPFLAGS := $(CFLAGS) $(SDL_CFLAGS) $(INCLUDES) $(CC_DEBUG_FLAGS)
+# LDFLAGS := -lGL -lGLU $(SDL_LIBS) $(LIB_DEBUG_FLAGS)
+LDFLAGS := $(OPENGL_LIBS) $(GLU_LIBS) $(SDL_LIBS) $(LIB_DEBUG_FLAGS)
+
+BASE_LIB = $(LIB_PRE)base.$(LIB_EXT)
+all: $(BASE_LIB)
+
+# Rebuild everything completely, but with GCC 4.x Mudflap support
+mudflap:
+	@echo "Rebuilding with GCC Mudflap support"
+	$(MAKE) clean all CFLAGS="$(CFLAGS) -fmudflap"
+
+# Source files.
+SRCS :=						\
+	container.cpp				\
+	dlmalloc.c				\
+	config.cpp				\
+	ogl.cpp					\
+	image.cpp				\
+	image_filters.cpp			\
+	jpeg.cpp				\
+	png_helper.cpp				\
+	postscript.cpp				\
+	triangulate_float.cpp			\
+	triangulate_sint32.cpp			\
+	tu_file.cpp				\
+	tu_file_SDL.cpp				\
+	tu_random.cpp				\
+	tu_timer.cpp				\
+	tu_types.cpp				\
+	utf8.cpp				\
+	utility.cpp				\
+	zlib_adapter.cpp
+
+OBJS := $(SRCS:.cpp=.$(OBJ_EXT))
+OBJS := $(OBJS:.c=.$(OBJ_EXT))
+
+triangulate_sint32.$(OBJ_EXT) triangulate_float.$(OBJ_EXT): triangulate_impl.h triangulate.h grid_index.h
+
+$(BASE_LIB): $(OBJS)
+	$(AR) $(AR_FLAGS) $(LIB_OUT_FLAG) $(BASE_LIB) $(OBJS)
+
+clean:
+	-@rm -f $(BASE_LIB) $(OBJS)
+
+echo:
+	echo $(OBJS)
+	echo $(BASE_LIB)
+
+container.o: ../base/container.h ../base/tu_config.h
+container.o: ../compatibility_include.h ../base/dlmalloc.h ../base/utility.h
+container.o: ../base/tu_math.h ../base/tu_types.h ../base/tu_swap.h
+container.o: ../base/utf8.h ../base/tu_random.h
+image.o: ../base/image.h ../base/tu_config.h ../compatibility_include.h
+image.o: ../base/dlmalloc.h ../base/tu_types.h ../base/container.h
+image.o: ../base/utility.h ../base/tu_math.h ../base/tu_swap.h ../base/jpeg.h
+image.o: ../base/tu_file.h
+image_filters.o: ../base/image.h ../base/tu_config.h
+image_filters.o: ../compatibility_include.h ../base/dlmalloc.h
+image_filters.o: ../base/tu_types.h ../base/utility.h ../base/tu_math.h
+image_filters.o: ../base/tu_swap.h ../base/container.h
+jpeg.o: ../base/utility.h ../base/tu_config.h ../compatibility_include.h
+jpeg.o: ../base/dlmalloc.h ../base/tu_math.h ../base/tu_types.h
+jpeg.o: ../base/tu_swap.h ../base/jpeg.h ../base/tu_file.h
+ogl.o: ../base/ogl.h ../base/tu_config.h ../compatibility_include.h
+ogl.o: ../base/dlmalloc.h ../base/tu_opengl_includes.h ../base/utility.h
+ogl.o: ../base/tu_math.h ../base/tu_types.h ../base/tu_swap.h
+png_helper.o: ../base/utility.h ../base/tu_config.h
+png_helper.o: ../compatibility_include.h ../base/dlmalloc.h ../base/tu_math.h
+png_helper.o: ../base/tu_types.h ../base/tu_swap.h ../base/png_helper.h
+png_helper.o: ../base/tu_file.h
+postscript.o: ../base/postscript.h ../base/tu_config.h
+postscript.o: ../compatibility_include.h ../base/dlmalloc.h ../base/tu_file.h
+postscript.o: ../base/tu_types.h ../base/tu_swap.h ../base/utility.h
+postscript.o: ../base/tu_math.h
+test_ogl.o: ../base/ogl.h ../base/tu_config.h ../compatibility_include.h
+test_ogl.o: ../base/dlmalloc.h ../base/tu_opengl_includes.h
+triangulate_float.o: ../base/triangulate_impl.h ../base/utility.h
+triangulate_float.o: ../base/tu_config.h ../compatibility_include.h
+triangulate_float.o: ../base/dlmalloc.h ../base/tu_math.h ../base/tu_types.h
+triangulate_float.o: ../base/tu_swap.h ../base/triangulate.h
+triangulate_float.o: ../base/container.h ../base/tu_random.h
+triangulate_float.o: ../base/grid_index.h ../base/tu_timer.h
+triangulate_sint32.o: ../base/triangulate_impl.h ../base/utility.h
+triangulate_sint32.o: ../base/tu_config.h ../compatibility_include.h
+triangulate_sint32.o: ../base/dlmalloc.h ../base/tu_math.h ../base/tu_types.h
+triangulate_sint32.o: ../base/tu_swap.h ../base/triangulate.h
+triangulate_sint32.o: ../base/container.h ../base/tu_random.h
+triangulate_sint32.o: ../base/grid_index.h ../base/tu_timer.h
+tu_file.o: ../base/tu_file.h ../base/tu_config.h ../compatibility_include.h
+tu_file.o: ../base/dlmalloc.h ../base/tu_types.h ../base/tu_swap.h
+tu_file.o: ../base/utility.h ../base/tu_math.h ../base/container.h
+tu_file_SDL.o: ../base/tu_file.h ../base/tu_config.h
+tu_file_SDL.o: ../compatibility_include.h ../base/dlmalloc.h
+tu_file_SDL.o: ../base/tu_types.h ../base/tu_swap.h ../base/utility.h
+tu_file_SDL.o: ../base/tu_math.h
+tu_random.o: ../base/tu_random.h ../base/tu_config.h
+tu_random.o: ../compatibility_include.h ../base/dlmalloc.h ../base/tu_types.h
+tu_timer.o: ../base/tu_timer.h ../base/tu_types.h ../base/tu_config.h
+tu_timer.o: ../compatibility_include.h ../base/dlmalloc.h
+tu_types.o: ../base/tu_types.h ../base/tu_config.h ../compatibility_include.h
+tu_types.o: ../base/dlmalloc.h ../base/utility.h ../base/tu_math.h
+tu_types.o: ../base/tu_swap.h
+utf8.o: ../base/utf8.h ../base/tu_types.h ../base/tu_config.h
+utf8.o: ../compatibility_include.h ../base/dlmalloc.h
+utility.o: ../base/utility.h ../base/tu_config.h ../compatibility_include.h
+utility.o: ../base/dlmalloc.h ../base/tu_math.h ../base/tu_types.h
+utility.o: ../base/tu_swap.h
+zlib_adapter.o: ../base/zlib_adapter.h ../base/tu_config.h
+zlib_adapter.o: ../compatibility_include.h ../base/dlmalloc.h
+zlib_adapter.o: ../base/tu_file.h ../base/tu_types.h ../base/tu_swap.h
+zlib_adapter.o: ../base/utility.h ../base/tu_math.h
+
+# Local Variables:
+# tab-width: 8
+# indent-tabs-mode: t
+# End:
+# DO NOT DELETE
+
